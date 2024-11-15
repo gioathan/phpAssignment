@@ -29,33 +29,87 @@ class Candidates extends BaseController
     }
 
 
-    public function add()
+    public function add($id=null)
     {   
-        $data = [];
-
-        if ($_POST){
-            $rules = [
-                'firstname' => 'required',
-                'lastname' => 'required',
-                'date_of_birth' => 'required',
-                'cover_text' => 'required'
+        if ($id === null)
+        {
+            $data = [
+                'title' => 'Add a New Candidate',
+                'firstname' => '',
+                'lastname' => '',
+                'date_of_birth' => '',
+                'active' => '',
+                'cover_text' => ''
             ];
-            
-            if ($this->validate($rules)){
+    
+    
+            if ($_POST){
+                $rules = [
+                    'firstname' => 'required',
+                    'lastname' => 'required',
+                    'date_of_birth' => 'required',
+                    'active' => 'required',
+                    'cover_text' => 'required'
+                ];
+                
+                if ($this->validate($rules)){
+    
+    
+                    $cand_data = $this->request->getPost();
+                    $db = db_connect();
+                    $model = new Candidate($db);
+                    $model->save($cand_data);
+    
+                    return redirect()->to('/');
+                } else {
+                    $data['validation'] = $this->validator;
+                }
+    
+            }
+        } else {
 
+            $db = db_connect();
+            $model = new Candidate($db);
+            $post = $model->find($id);
 
-                $cand_data = $this->request->getPost();
-                $db = db_connect();
-                $model = new Candidate($db);
-                $model->save($cand_data);
+            $firstname = $post['firstname'];
+            $lastname = $post['lastname'];
+
+            $data = [
+                'title' => "Edit Candidate $firstname $lastname",
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'date_of_birth' => $post['date_of_birth'],
+                'active' => $post['active'],
+                'cover_text' => $post['cover_text']
+            ];
+
+            if ($_POST){
+                
+                $_POST['id'] = $id;
+                $model->save($_POST);
 
                 return redirect()->to('/');
-            } else {
-                $data['validation'] = $this->validator;
             }
 
         }
+
     
         return view('add', $data);
     }
+
+    public function delete($id)
+    {
+        $db = db_connect();
+        $model = new Candidate($db);
+        $post = $model->find($id);
+        if($post){
+            $model->delete($id);
+            return redirect()->to('/candidates');
+        }
+    }
+
 }
+
+
+

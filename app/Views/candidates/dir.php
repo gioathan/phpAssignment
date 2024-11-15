@@ -4,7 +4,8 @@
 
 <div class="container mt-5">
     <h1 class="mb-4">Candidates</h1>
-    <table class="table table-bordered">
+    <p><?php echo count($candidates);?> candidates were found.</p>
+    <table class="table">
         <thead>
             <tr>
                 <th scope="col">First Name</th>
@@ -12,6 +13,7 @@
                 <th scope="col">Date of Birth</th>
                 <th scope="col">Active</th>
                 <th scope="col">Cover Text</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +24,11 @@
                 <td><?= $cand['date_of_birth'] ?></td>
                 <td><?= $cand['active'] ?></td>
                 <td><?= $cand['cover_text'] ?></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='candidates/add/<?php echo $cand['id']; ?>'">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="window.location.href='candidates/delete/<?php echo $cand['id']; ?>'">Delete</button>
+                </td>
+                
             </tr>
         <?php endforeach; ?>
         </tbody>
